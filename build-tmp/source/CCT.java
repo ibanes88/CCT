@@ -78,7 +78,11 @@ public void draw()
 {
   motionDetect();
   tint(255,120);
+  blobDetect();
   rauschCheck();
+  drawBlobsAndEdges(false, false, true);
+}
+public void blobDetect(){
   motionImg = get();
   //test.filter(BLUR, 2);
   image(video, 0, 0, width, height);
@@ -89,8 +93,8 @@ public void draw()
   image(blurImg,0,0,width,height);
   //image(blurImg, width-width/3, height-height/3, width/3, height/3);
   theBlobDetection.computeBlobs(blurImg.pixels);
-  drawBlobsAndEdges(false, false, true);
 }
+
 public void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
 {
 	noFill();

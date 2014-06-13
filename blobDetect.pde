@@ -1,3 +1,16 @@
+void blobDetect(){
+  motionImg = get();
+  //test.filter(BLUR, 2);
+  image(video, 0, 0, width, height);
+  //image(motionImg, 0, 0, width, height);
+  blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
+  
+  fastblur(blurImg, blobBlur);
+  image(blurImg,0,0,width,height);
+  //image(blurImg, width-width/3, height-height/3, width/3, height/3);
+  theBlobDetection.computeBlobs(blurImg.pixels);
+}
+
 void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
 {
 	noFill();
