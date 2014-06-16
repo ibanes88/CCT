@@ -1,17 +1,17 @@
-// - Super Fast Blur v1.1 by Mario Klingemann <http://incubator.quasimondo.com>
-// - BlobDetection library
-
 import processing.video.*;
 import blobDetection.*;
 
 //Capture video;
 Movie video;
 BlobDetection theBlobDetection;
-PImage prevFrame;
-PImage motionImg, blurImg;
-boolean newFrame=false;
-float threshold = 20;
+PImage prevFrame, motionImg, blurImg;
+boolean newFrame = false;
+ArrayList<person> people;
+ArrayList<person> prevPeople;
+
+
 String PATH = "test.mov";
+float threshold = 20;
 int blobBlur = 1;
 float blobTreshold = 0.2f;
 PVector bCenter, bDirection;
@@ -20,7 +20,7 @@ int minA=300;
 //int H = 360;
 //int W = 960; //crowd.mp4
 //int H = 720;
-//int W = 320;
+//int W = 320; //abbey_low.mov
 //int H = 240;
 int W = 641; //test.mov
 int H = 361;
@@ -29,6 +29,8 @@ int H = 361;
 void setup()
 {
 	size(W, H);
+  people = new ArrayList<person>();
+  prevPeople = new ArrayList<person>();
 	video = new Movie(this, PATH);
         video.play();
         video.loop();
@@ -62,4 +64,5 @@ void draw()
   blobDetect();
   rauschCheck();
   drawBlobsAndEdges(false, false, true);
+  peopleTrack();
 }

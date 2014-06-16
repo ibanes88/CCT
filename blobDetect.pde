@@ -43,12 +43,13 @@ void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
 			{
 				strokeWeight(1);
 				stroke(255,0,0);
-                                rect(
+          rect(
 					b.xMin*width,b.yMin*height,
 					b.w*width,b.h*height
 					);
 			}
-                        
+       
+      // Lines                 
       if (track)
       {
         if (b.w*width*b.h*height>minA){
@@ -69,6 +70,7 @@ void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
   }
 }
 
+// - Super Fast Blur v1.1 by Mario Klingemann <http://incubator.quasimondo.com>
 void fastblur(PImage img,int radius)
 {
  if (radius<1){
