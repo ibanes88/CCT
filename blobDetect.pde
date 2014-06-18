@@ -1,7 +1,7 @@
 void blobDetect(){
   motionImg = get();
   //test.filter(BLUR, 2);
-  image(video, 0, 0, width, height);
+  //image(video, 0, 0, width, height);
   //image(motionImg, 0, 0, width, height);
   blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
   
@@ -9,6 +9,8 @@ void blobDetect(){
   image(blurImg,0,0,width,height);
   //image(blurImg, width-width/3, height-height/3, width/3, height/3);
   theBlobDetection.computeBlobs(blurImg.pixels);
+  oldPersons = newPersons;
+  newPersons.clear();
 }
 
 void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
@@ -42,17 +44,19 @@ void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
 			if (drawBlobs)
 			{
 				strokeWeight(1);
+                                noFill();
 				stroke(255,0,0);
-          rect(
+                                rect(
 					b.xMin*width,b.yMin*height,
 					b.w*width,b.h*height
 					);
 			}
-       
-      // Lines                 
+                        
       if (track)
-      {
-        if (b.w*width*b.h*height>minA){
+      { 
+          if (b.w*width*b.h*height>minA){
+          newPersons.add(new Person(b.x*width, b.y*height,n));
+          blobNb++;
           bCenter = new PVector(b.x, b.y);
           float bx = bCenter.x*width;
           float by = bCenter.y*height;
@@ -61,16 +65,29 @@ void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
           line(0,0,bx,by);
           noStroke();
           ellipseMode(CENTER);
-          fill(0,0,255);
+          fill(255,0,0);
           ellipse(bx,by,10,10);
           //println(bCenter.x, bCenter.y, theBlobDetection.getBlobNb()); 
         } 
       }
+      
 		}
   }
+  textFont(f,16);
+  fill(0,0,120);
+  text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-20);
+  blobNb=0;
+  text(newPersons.size()+ " / " + oldPersons.size(), width-60, height-20);
+  for (int z=0;z<newPersons.size();z++){
+    Person person = newPersons.get(z);
+    person.updateId();
+    person.printId();
+    person.trackPath();
+    //println("ID : "+person.id+" ist : " + "x : " + person.location.x + " y : " + person.location.y);
+    //println(newPersons[z].id);
+    }
 }
 
-// - Super Fast Blur v1.1 by Mario Klingemann <http://incubator.quasimondo.com>
 void fastblur(PImage img,int radius)
 {
  if (radius<1){

@@ -1,8 +1,8 @@
 int xRausch, yRausch, lTest, schwelle;
 PImage rauschen;
 int rauschCheckX = 5;
-int rauschCheckY = 10;
-int pCount = 0;
+int rauschCheckY = 12;
+int pCount=0;
 
 void rauschCheck() {
   loadPixels();
@@ -24,7 +24,7 @@ void rauschCheck() {
           pixels[loc] = color(0);
         }
         //println(pCount);
-        pCount = 0;
+        pCount=0;
       }
     }
   }
