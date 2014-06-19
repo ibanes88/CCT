@@ -1,109 +1,92 @@
-// - Super Fast Blur v1.1 by Mario Klingemann <http://incubator.quasimondo.com>
-// - BlobDetection library
-
 import processing.video.*;
 import blobDetection.*;
 
-//Capture video;
 Movie video;
-BlobDetection theBlobDetection;
-PImage prevFrame;
-PImage motionImg, blurImg;
+BlobDetection theBlobDetection; //blobDetection Class
+
+PImage prevFrame; //first frame for motionDetect.pde
+PImage motionImg, blurImg; //optimized image for blobDetection
+
 boolean newFrame=false;
-float threshold = 40;
+
+
+float threshold = 40; //difference treshold in motionDetect.pde
+float blobTreshold = 0.5f; //treshold for blobDetection
+
 String PATH = "innenhof_3.mov";
-int blobBlur = 1;
-float blobTreshold = 0.5f;
-PVector bCenter, bDirection;
-int minA=200;
-ArrayList <Person> newPersons;
-ArrayList <Person> oldPersons;
-int W = 700; //innenhof_3.mov
-int H = 394;
-//int W = 960; //crowd.mp4
-//int H = 720;
-//int W = 320;
-//int H = 240;
-//int W = 641; //test.mov
-//int H = 361;
-//int W = 352;
-//int H = 288;
-PFont f;
-int blobNb = 0;
+
+int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
+int minA=200; //min area in pixels for Blob to be treated as a person
+int blobNb = 0; //blobNumber in current frame
 int draw=0;
-int range=15;
-boolean isNear=false;
-//int pNear;
+int range=15; //range for person.update
+int W = 700; 
+int H = 394;
+
+ArrayList <Person> newPersons; //contains persons active in current frame
+ArrayList <Person> oldPersons; //contains "dead" persons
+
+PFont f;
 
 
 void setup()
 {
-	size(W, H);
+	size(W,H);
 	video = new Movie(this, PATH);
-        //video.play();
-        video.loop();
-        //video.volume(0);
-        prevFrame = createImage(W,H,RGB);
-        lTest = rauschCheckX*rauschCheckY;
-        schwelle = int(lTest*0.6);
-        //println(schwelle);
-        //video.start();
-        video.speed(1);
-        frameRate(15);
-	// BlobDetection
-	// blurImg which will be sent to detection (a smaller copy of the cam frame);
-	blurImg = new PImage(120,90);
-        motionImg = new PImage(W,H);
-	theBlobDetection = new BlobDetection(blurImg.width, blurImg.height);
-	theBlobDetection.setPosDiscrimination(true);
-	theBlobDetection.setThreshold(blobTreshold); // will detect bright areas whose luminosity > 0.2f;
-        newPersons = new ArrayList <Person>();
-        oldPersons = new ArrayList <Person>();
-        f = createFont("Arial",16,true);
+	video.loop();
+	prevFrame = createImage(W,H,RGB);
+        
+	//lTest = rauschCheckX*rauschCheckY; //for rauschCheck
+	//schwelle = int(lTest*0.6);         //for rauschCheck
+        
+	video.speed(1);
+	frameRate(15);
+	    
+	blurImg = new PImage(120,90); //small copy of camera frame for blobDetection
+	motionImg = new PImage(W,H);
+	    
+	theBlobDetection = new BlobDetection(blurImg.width, blurImg.height);		theBlobDetection.setPosDiscrimination(true);		theBlobDetection.setThreshold(blobTreshold);
+	newPersons = new ArrayList <Person>();
+	oldPersons = new ArrayList <Person>();
+	f = createFont("Arial",16,true);
 }
 
-/*
-// captureEvent()
-void movieEvent(Movie video)
-{
-        prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height); // Before we read the new frame, we always save the previous frame for comparison!
-        prevFrame.updatePixels();
-	video.read();
-        newFrame = true;
-}*/
 
 void draw()
 {
-  prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
-        prevFrame.updatePixels();
-  video.read();
-  newFrame = true;
-  if (newFrame)
-  {
-    newFrame=false;
-    draw++;
-    noStroke();
-    fill(255,255,255,75);
-    rect(0,0,width,height);
-    motionDetect();
-    //tint(255,120);
-    //rauschCheck();
-    blobDetect(); // hier: []oldP == []newP / newP.clear()
-    drawBlobsAndEdges(false, false, false);
-    personDead();
-    visualize();
-    if (mousePressed == true) {
-      for (int z=oldPersons.size()-1;z>0; z--) {
-        Person person = oldPersons.get(z);
-        person.drawPath(0,255,0);
-}  
-    }
-    textFont(f,10);
-    fill(255,0,0);
-    text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-20);
-    text(newPersons.size()+ " / " + oldPersons.size(), width-60, height-20);
-    text("draw :" + draw,width-80,40);
-    text("frame :" + frameCount,width-80,80);
-    blobNb=0;
-  }
+	prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
+	prevFrame.updatePixels();
+	video.read();
+	newFrame = true;
+	
+	if (newFrame)
+	{
+		newFrame=false;
+		draw++;
+		noStroke();
+		fill(255,255,255,75);
+		rect(0,0,width,height); //plane with alpha for motionBlur
+		motionDetect();
+		//tint(255,120);
+		//rauschCheck();
+		blobDetect(); //detect blobs in frame and create/update person instances
+		drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
+		personDead();
+		visualize();
+		
+		if (mousePressed == true) {
+ 			
+ 			for (int z=oldPersons.size()-1;z>0; z--) {
+				Person person = oldPersons.get(z);
+				person.drawPath(0,255,0);
+			}  
+    	}
+    	textFont(f,10);
+    	fill(255,0,0);
+    	text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-20);
+    	text(newPersons.size()+ " / " + oldPersons.size(), width-60, height-20);
+    	text("draw :" + draw,width-80,40);
+    	text("frame :" + frameCount,width-80,80);
+    	blobNb=0;
+  	}
 }
