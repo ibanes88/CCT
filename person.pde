@@ -3,24 +3,23 @@ PVector location;
 PVector velocity;
 int id;
 PVector locationOld;
-int range=10;
+boolean hasBeenUpdated = true;
+boolean isDead = false;
+ArrayList <PVector> way = new ArrayList <PVector>();
 
-Person(float x, float y,int id_){
+Person(float x, float y){
    location = new PVector(x,y);
    velocity = new PVector(0,0);
-   id = id_;
    
 }
 
-void update(){
-  location.add(velocity);
-}
-
-void trackPath() {
-  stroke(255,255,0);
-  if (locationOld!=null && location!=null){
-  line(locationOld.x,locationOld.y,location.x,location.y);
-  }
+void update(float x, float y){
+   if(frameCount%5==0){
+    way.add(new PVector(location.x,location.y));
+   }
+  location.x = x;
+  location.y = y;
+  hasBeenUpdated = true;
 }
 
 void printId() {
@@ -30,22 +29,21 @@ void printId() {
   text("ID =" + id, location.x+20,location.y+20);
 }
 
-void updateId() {
-  for (int i=oldPersons.size()-1;i>0;i--){
-    Person person = oldPersons.get(i);
-    float x_ = person.location.x;
-    float y_ = person.location.x;
-    int id_ = person.id; 
-    if (x_-range<location.x && x_+range>location.x && y_-range<location.y && y_+range>location.y){
-      id=id_;
-      locationOld = person.location;
-      return;
-    }
-    }
-}
-
 void display(){
-          fill(255,0,0);
-          ellipse(location.x,location.y,10,10);
+          noStroke();
+          fill(0,0,255);
+          ellipse(location.x,location.y,12,12);
+}
+  
+void drawPath(int r, int g, int b){
+  for (int i=way.size()-1;i>1;i--){
+    PVector f = way.get(i);
+    PVector d = way.get(i-1);
+    stroke(r,g,b);
+    strokeWeight(3);
+    line(f.x,f.y,d.x,d.y);
+    }
 }
 }
+//PVector person = newPersons.get(z);
+//ArrayList <Person> newPersons = new ArrayList <Person>();

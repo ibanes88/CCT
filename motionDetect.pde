@@ -1,12 +1,12 @@
 void motionDetect()
 {
-  // Capture video
-  //if (video.available()) {
-    // Save previous frame for motion detection!!
-    //prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height); // Before we read the new frame, we always save the previous frame for comparison!
-    //prevFrame.updatePixels();
-    //video.read();
-  //}
+  /* Capture video
+  if (video.available()) {
+     //Save previous frame for motion detection!!
+    prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height); // Before we read the new frame, we always save the previous frame for comparison!
+    prevFrame.updatePixels();
+    video.read();
+  }*/
   
   loadPixels();
   video.loadPixels();
@@ -33,7 +33,7 @@ void motionDetect()
         // white gamma, für blur
         //stroke(255,255,255,100);
         //point(x, y);
-        //pixels[loc] = color(255);u
+        //pixels[loc] = color(255);
       }
     }
   }

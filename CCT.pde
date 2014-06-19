@@ -31,6 +31,9 @@ int H = 394;
 PFont f;
 int blobNb = 0;
 int draw=0;
+int range=15;
+boolean isNear=false;
+//int pNear;
 
 
 void setup()
@@ -45,7 +48,7 @@ void setup()
         schwelle = int(lTest*0.6);
         //println(schwelle);
         //video.start();
-        //video.speed(1);
+        video.speed(1);
         frameRate(15);
 	// BlobDetection
 	// blurImg which will be sent to detection (a smaller copy of the cam frame);
@@ -59,7 +62,7 @@ void setup()
         f = createFont("Arial",16,true);
 }
 
-
+/*
 // captureEvent()
 void movieEvent(Movie video)
 {
@@ -67,10 +70,14 @@ void movieEvent(Movie video)
         prevFrame.updatePixels();
 	video.read();
         newFrame = true;
-}
+}*/
 
 void draw()
 {
+  prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
+        prevFrame.updatePixels();
+  video.read();
+  newFrame = true;
   if (newFrame)
   {
     newFrame=false;
@@ -82,10 +89,21 @@ void draw()
     //tint(255,120);
     //rauschCheck();
     blobDetect(); // hier: []oldP == []newP / newP.clear()
-    drawBlobsAndEdges(true, true, true);
+    drawBlobsAndEdges(false, false, false);
+    personDead();
+    visualize();
+    if (mousePressed == true) {
+      for (int z=oldPersons.size()-1;z>0; z--) {
+        Person person = oldPersons.get(z);
+        person.drawPath(0,255,0);
+}  
+    }
     textFont(f,10);
     fill(255,0,0);
+    text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-20);
+    text(newPersons.size()+ " / " + oldPersons.size(), width-60, height-20);
     text("draw :" + draw,width-80,40);
     text("frame :" + frameCount,width-80,80);
+    blobNb=0;
   }
 }
