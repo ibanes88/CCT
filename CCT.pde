@@ -14,22 +14,30 @@ int draw=0; // current draw
 int lwp = 0;
 int id = 1; //id starting number
 
-String PATH = "innenhof_3.mov";
+String PATH = "innenhof_komplett.mp4";
 
-float threshold = 40; //difference treshold in motionDetect.pde
+float threshold = 50; //difference treshold in motionDetect.pde
 float blobTreshold = 0.5f; //treshold for blobDetection
 
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
-int minA = 200; //min area in pixels for Blob to be treated as a person
+int minA = 430; //min area in pixels for Blob to be treated as a person
 int trackDistance = 25; //trackDistance for person.update
 int viewportBorder = 15; //border thickness in which leftViewport will be detected
 int timerLimit = 30;
+
+	int pCount0=0;
+  int pCount1=0;
+  int pCount2=0;
+  int pCount3=0;
+  int pCount4=0;
+  int pCount5=0;
 
 int W = 700; 
 int H = 394;
 
 ArrayList <Person> activePersons; //contains persons active in current frame
 ArrayList <Person> oldPersons; //contains "dead" persons
+ArrayList <Integer> detectedPixels;
 
 PFont f;
 
@@ -55,6 +63,7 @@ void setup()
 	theBlobDetection.setThreshold(blobTreshold);
 	activePersons = new ArrayList <Person>();
 	oldPersons = new ArrayList <Person>();
+	detectedPixels = new ArrayList <Integer>();
 	f = createFont("Arial",16,true);
 }
 
@@ -69,15 +78,10 @@ void draw()
 	if (newFrame)
 	{
 		newFrame=false;
-		draw++;
-		noStroke();
-		fill(255,255,255,75);
-		rect(0,0,width,height); //plane with alpha for motionBlur
 		motionDetect();
-		//tint(255,120);
-		//rauschCheck();
+			//rauschCheck();
 		blobDetect(); //detect blobs in frame and create/update person instances
-		drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
+		drawBlobsAndEdges(false, false, false); //visualize (drawBoxes, drawContours, drawPath)
 		checkPersonStatus();
 		displayActivePersons();
 		displayOldWaypoints();
@@ -90,6 +94,7 @@ void draw()
     	text("frame: " + frameCount,width-60,30);
     	text("leftViewport: " + lwp, 10, 10);
     	blobNb=0;
+    	draw++;
   	}
 }
 
