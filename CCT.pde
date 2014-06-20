@@ -19,7 +19,7 @@ int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
 int minA=200; //min area in pixels for Blob to be treated as a person
 int blobNb = 0; //blobNumber in current frame
 int draw=0;
-int range=15; //range for person.update
+int range=10; //range for person.update
 int W = 700; 
 int H = 394;
 

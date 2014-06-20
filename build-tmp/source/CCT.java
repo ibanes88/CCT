@@ -38,7 +38,7 @@ int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
 int minA=200; //min area in pixels for Blob to be treated as a person
 int blobNb = 0; //blobNumber in current frame
 int draw=0;
-int range=15; //range for person.update
+int range=10; //range for person.update
 int W = 700; 
 int H = 394;
 
@@ -58,8 +58,8 @@ public void setup()
 	//lTest = rauschCheckX*rauschCheckY; //for rauschCheck
 	//schwelle = int(lTest*0.6);         //for rauschCheck
         
-	video.speed(1);
-	frameRate(15);
+	video.speed(0.1f);
+	frameRate(1);
 	    
 	blurImg = new PImage(120,90); //small copy of camera frame for blobDetection
 	motionImg = new PImage(W,H);
@@ -112,7 +112,7 @@ public void draw()
 public void blobDetect() 
 {
 	motionImg = get(); //get processed image after motionDetect
-	//image(video, 0, 0, width, height);
+	image(video, 0, 0, width, height);
 	blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
 	fastblur(blurImg, blobBlur); //blur image
 	//image(blurImg, 0, 0, width, height);
@@ -418,7 +418,6 @@ public void createUpdate(float x, float y)
 	isNear=false; 
 }
 
-
 public void personDead()
 {
 	for (int z=newPersons.size()-1;z>0; z--) 
@@ -436,7 +435,6 @@ public void personDead()
 	}
 
 }
-
 
 public void visualize()
 {
