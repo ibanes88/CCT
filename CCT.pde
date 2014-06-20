@@ -7,19 +7,24 @@ BlobDetection theBlobDetection; //blobDetection Class
 PImage prevFrame; //first frame for motionDetect.pde
 PImage motionImg, blurImg; //optimized image for blobDetection
 
-boolean newFrame=false;
+boolean newFrame = false;
 
+int blobNb = 0; //blobs in current frame
+int draw=0; // current draw
+int lwp = 0;
+int id = 1; //id starting number
+
+String PATH = "innenhof_3.mov";
 
 float threshold = 40; //difference treshold in motionDetect.pde
 float blobTreshold = 0.5f; //treshold for blobDetection
 
-String PATH = "innenhof_komplett.mp4";
-
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
-int minA=200; //min area in pixels for Blob to be treated as a person
-int blobNb = 0; //blobNumber in current frame
-int draw=0;
-int range=10; //range for person.update
+int minA = 200; //min area in pixels for Blob to be treated as a person
+int trackDistance = 25; //trackDistance for person.update
+int viewportBorder = 15; //border thickness in which leftViewport will be detected
+int timerLimit = 30;
+
 int W = 700; 
 int H = 394;
 
@@ -71,11 +76,11 @@ void draw()
 		motionDetect();
 		//tint(255,120);
 		//rauschCheck();
-		//blobDetect(); //detect blobs in frame and create/update person instances
-		//drawBlobsAndEdges(false, false, false); //visualize (drawBoxes, drawContours, drawPath)
-		//checkPersonStatus();
-		//displayActivePersons();
-		//displayOldWaypoints();
+		blobDetect(); //detect blobs in frame and create/update person instances
+		drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
+		checkPersonStatus();
+		displayActivePersons();
+		displayOldWaypoints();
 		
     	textFont(f,10);
     	fill(255,0,0);
@@ -83,6 +88,7 @@ void draw()
     	text(activePersons.size()+ " / " + oldPersons.size(), width-50, height-10);
     	text("draw:  " + draw,width-60,15);
     	text("frame: " + frameCount,width-60,30);
+    	text("leftViewport: " + lwp, 10, 10);
     	blobNb=0;
   	}
 }
