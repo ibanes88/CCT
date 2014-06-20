@@ -29,11 +29,11 @@ void update(float x, float y)
 }
 
 
-void printId() 
+void drawID() 
 {
 	textFont(f,10);
 	fill(255,0,0);
-	text("ID =" + id, location.x+20,location.y+20);
+	text(id, location.x+20,location.y+20);
 }
 
 
@@ -45,7 +45,7 @@ void display()
 }
 
 
-void drawPath(int r, int g, int b)
+void drawWaypoints(int r, int g, int b)
 {
 	for (int i=way.size()-1;i>1;i--)
 	{

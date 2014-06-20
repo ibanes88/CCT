@@ -42,7 +42,7 @@ int range=15; //range for person.update
 int W = 700; 
 int H = 394;
 
-ArrayList <Person> newPersons; //contains persons active in current frame
+ArrayList <Person> activePersons; //contains persons active in current frame
 ArrayList <Person> oldPersons; //contains "dead" persons
 
 PFont f;
@@ -64,8 +64,10 @@ public void setup()
 	blurImg = new PImage(120,90); //small copy of camera frame for blobDetection
 	motionImg = new PImage(W,H);
 	    
-	theBlobDetection = new BlobDetection(blurImg.width, blurImg.height);		theBlobDetection.setPosDiscrimination(true);		theBlobDetection.setThreshold(blobTreshold);
-	newPersons = new ArrayList <Person>();
+	theBlobDetection = new BlobDetection(blurImg.width, blurImg.height);	
+	theBlobDetection.setPosDiscrimination(true);
+	theBlobDetection.setThreshold(blobTreshold);
+	activePersons = new ArrayList <Person>();
 	oldPersons = new ArrayList <Person>();
 	f = createFont("Arial",16,true);
 }
@@ -90,24 +92,30 @@ public void draw()
 		//rauschCheck();
 		blobDetect(); //detect blobs in frame and create/update person instances
 		drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
-		personDead();
-		visualize();
+		checkPersonStatus();
+		displayActivePersons();
+		displayOldWaypoints();
 		
-		if (mousePressed == true) {
- 			
- 			for (int z=oldPersons.size()-1;z>0; z--) {
-				Person person = oldPersons.get(z);
-				person.drawPath(0,255,0);
-			}  
-    	}
     	textFont(f,10);
     	fill(255,0,0);
-    	text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-20);
-    	text(newPersons.size()+ " / " + oldPersons.size(), width-60, height-20);
-    	text("draw :" + draw,width-80,40);
-    	text("frame :" + frameCount,width-80,80);
+    	text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-10);
+    	text(activePersons.size()+ " / " + oldPersons.size(), width-50, height-10);
+    	text("draw:  " + draw,width-60,15);
+    	text("frame: " + frameCount,width-60,30);
     	blobNb=0;
   	}
+}
+
+public void displayOldWaypoints()
+{
+  if (keyPressed == true)
+  {
+    for (int z=oldPersons.size()-1; z>0; z--)
+    {
+      Person p = oldPersons.get(z);
+      p.drawWaypoints(0,255,0); //inactiveWaypoints color
+    }  
+  }
 }
 public void blobDetect() 
 {
@@ -332,11 +340,11 @@ public void update(float x, float y)
 }
 
 
-public void printId() 
+public void drawID() 
 {
 	textFont(f,10);
 	fill(255,0,0);
-	text("ID =" + id, location.x+20,location.y+20);
+	text(id, location.x+20,location.y+20);
 }
 
 
@@ -348,7 +356,7 @@ public void display()
 }
 
 
-public void drawPath(int r, int g, int b)
+public void drawWaypoints(int r, int g, int b)
 {
 	for (int i=way.size()-1;i>1;i--)
 	{
@@ -400,34 +408,32 @@ public void rauschCheck() {
 public void createUpdate(float x, float y)
 {
 	boolean isNear=false;
-	for (int z=0; z<newPersons.size(); z++) 
+	for (int z=0; z<activePersons.size(); z++) 
 	{
-		Person person = newPersons.get(z);
+		Person person = activePersons.get(z);
 		if (x-range<person.location.x && x+range>person.location.x && y-range<person.location.y && y+range>person.location.y) 
     	{
 			isNear=true;
 			person.update(x, y);
-			z=newPersons.size()-1;
+			z=activePersons.size()-1;
 		}
 	}
   	if (!isNear) 
 	{
-		newPersons.add(new Person(x, y));
-	}
-
-	isNear=false; 
+		activePersons.add(new Person(x, y));
+	} 
 }
 
 
-public void personDead()
+public void checkPersonStatus()
 {
-	for (int z=newPersons.size()-1;z>0; z--) 
+	for (int z=activePersons.size()-1;z>0; z--) 
 	{
-		Person person = newPersons.get(z);
+		Person person = activePersons.get(z);
 		if(person.isDead)
 		{
 			oldPersons.add(person);
-			newPersons.remove(z);
+			activePersons.remove(z);
 		} else if (!person.hasBeenUpdated)
 		{
         	person.isDead=true;
@@ -438,20 +444,19 @@ public void personDead()
 }
 
 
-public void visualize()
+public void displayActivePersons()
 {
-	for (int z=newPersons.size()-1;z>0; z--) 
+	for (int z=activePersons.size()-1;z>0; z--) 
 	{
-		Person person = newPersons.get(z);
+		Person person = activePersons.get(z);
 		//person.id = z;
-		person.printId();
+		person.drawID();
 		person.display();
-		person.drawPath(255,0,255);
+		person.drawWaypoints(255,0,255);
 		//println("ID : "+person.id+" ist : " + "x : " + person.location.x + " y : " + person.location.y);
-		//println(newPersons[z].id);
+		//println(activePersons[z].id);
 	}
 }
-        
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "CCT" };
     if (passedArgs != null) {
