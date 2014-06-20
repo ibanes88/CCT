@@ -32,13 +32,13 @@ boolean newFrame=false;
 float threshold = 40; //difference treshold in motionDetect.pde
 float blobTreshold = 0.5f; //treshold for blobDetection
 
-String PATH = "innenhof_3.mov";
+String PATH = "innenhof_komplett.mp4";
 
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
 int minA=200; //min area in pixels for Blob to be treated as a person
 int blobNb = 0; //blobNumber in current frame
 int draw=0;
-int range=15; //range for person.update
+int range=10; //range for person.update
 int W = 700; 
 int H = 394;
 
@@ -90,11 +90,11 @@ public void draw()
 		motionDetect();
 		//tint(255,120);
 		//rauschCheck();
-		blobDetect(); //detect blobs in frame and create/update person instances
-		drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
-		checkPersonStatus();
-		displayActivePersons();
-		displayOldWaypoints();
+		//blobDetect(); //detect blobs in frame and create/update person instances
+		//drawBlobsAndEdges(false, false, false); //visualize (drawBoxes, drawContours, drawPath)
+		//checkPersonStatus();
+		//displayActivePersons();
+		//displayOldWaypoints();
 		
     	textFont(f,10);
     	fill(255,0,0);
@@ -120,7 +120,7 @@ public void displayOldWaypoints()
 public void blobDetect() 
 {
 	motionImg = get(); //get processed image after motionDetect
-	//image(video, 0, 0, width, height);
+	image(video, 0, 0, width, height);
 	blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
 	fastblur(blurImg, blobBlur); //blur image
 	//image(blurImg, 0, 0, width, height);
