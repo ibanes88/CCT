@@ -1,18 +1,20 @@
 class Person 
 {
-	int id; //specific Id
-	boolean hasBeenUpdated = true;
+	int pID; //specific Id
+	int timer = 0;
+	boolean updated = true;
 	boolean isDead = false;
+	boolean leftViewport;
 
 	PVector location;
-	PVector locationOld;
 
-	ArrayList <PVector> way = new ArrayList <PVector>();
+	ArrayList <PVector> waypoints = new ArrayList <PVector>();
 
 
-Person(float x, float y)
+Person(float x, float y, int id)
 {
 	location = new PVector(x,y);
+	pID = id;
 }
 
 
@@ -20,12 +22,12 @@ void update(float x, float y)
 {
 	if(frameCount%5==0)
 	{
-		way.add(new PVector(location.x,location.y));
+		waypoints.add(new PVector(location.x,location.y));
 	}
 
 	location.x = x;
 	location.y = y;
-	hasBeenUpdated = true;
+	updated = true;
 }
 
 
@@ -33,7 +35,7 @@ void drawID()
 {
 	textFont(f,10);
 	fill(255,0,0);
-	text(id, location.x+20,location.y+20);
+	text(pID, location.x+20,location.y+20);
 }
 
 
@@ -47,10 +49,10 @@ void display()
 
 void drawWaypoints(int r, int g, int b)
 {
-	for (int i=way.size()-1;i>1;i--)
+	for (int i=waypoints.size()-1;i>1;i--)
 	{
-		PVector f = way.get(i);
-		PVector d = way.get(i-1);
+		PVector f = waypoints.get(i);
+		PVector d = waypoints.get(i-1);
 		stroke(r,g,b);
 		strokeWeight(2);
 		line(f.x,f.y,d.x,d.y);

@@ -26,19 +26,24 @@ BlobDetection theBlobDetection; //blobDetection Class
 PImage prevFrame; //first frame for motionDetect.pde
 PImage motionImg, blurImg; //optimized image for blobDetection
 
-boolean newFrame=false;
+boolean newFrame = false;
 
+int blobNb = 0; //blobs in current frame
+int draw=0; // current draw
+int lwp = 0;
+int id = 1; //id starting number
+
+String PATH = "innenhof_3.mov";
 
 float threshold = 40; //difference treshold in motionDetect.pde
 float blobTreshold = 0.5f; //treshold for blobDetection
 
-String PATH = "innenhof_3.mov";
-
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
-int minA=200; //min area in pixels for Blob to be treated as a person
-int blobNb = 0; //blobNumber in current frame
-int draw=0;
-int range=15; //range for person.update
+int minA = 200; //min area in pixels for Blob to be treated as a person
+int trackDistance = 25; //trackDistance for person.update
+int viewportBorder = 15; //border thickness in which leftViewport will be detected
+int timerLimit = 30;
+
 int W = 700; 
 int H = 394;
 
@@ -102,6 +107,7 @@ public void draw()
     	text(activePersons.size()+ " / " + oldPersons.size(), width-50, height-10);
     	text("draw:  " + draw,width-60,15);
     	text("frame: " + frameCount,width-60,30);
+    	text("leftViewport: " + lwp, 10, 10);
     	blobNb=0;
   	}
 }
@@ -311,19 +317,21 @@ public void motionDetect()
 }
 class Person 
 {
-	int id; //specific Id
-	boolean hasBeenUpdated = true;
+	int pID; //specific Id
+	int timer = 0;
+	boolean updated = true;
 	boolean isDead = false;
+	boolean leftViewport;
 
 	PVector location;
-	PVector locationOld;
 
-	ArrayList <PVector> way = new ArrayList <PVector>();
+	ArrayList <PVector> waypoints = new ArrayList <PVector>();
 
 
-Person(float x, float y)
+Person(float x, float y, int id)
 {
 	location = new PVector(x,y);
+	pID = id;
 }
 
 
@@ -331,12 +339,12 @@ public void update(float x, float y)
 {
 	if(frameCount%5==0)
 	{
-		way.add(new PVector(location.x,location.y));
+		waypoints.add(new PVector(location.x,location.y));
 	}
 
 	location.x = x;
 	location.y = y;
-	hasBeenUpdated = true;
+	updated = true;
 }
 
 
@@ -344,7 +352,7 @@ public void drawID()
 {
 	textFont(f,10);
 	fill(255,0,0);
-	text(id, location.x+20,location.y+20);
+	text(pID, location.x+20,location.y+20);
 }
 
 
@@ -358,10 +366,10 @@ public void display()
 
 public void drawWaypoints(int r, int g, int b)
 {
-	for (int i=way.size()-1;i>1;i--)
+	for (int i=waypoints.size()-1;i>1;i--)
 	{
-		PVector f = way.get(i);
-		PVector d = way.get(i-1);
+		PVector f = waypoints.get(i);
+		PVector d = waypoints.get(i-1);
 		stroke(r,g,b);
 		strokeWeight(2);
 		line(f.x,f.y,d.x,d.y);
@@ -407,21 +415,38 @@ public void rauschCheck() {
 }
 public void createUpdate(float x, float y)
 {
-	boolean isNear=false;
-	for (int z=0; z<activePersons.size(); z++) 
+	ArrayList<Person> peopleInTrackDistance = new ArrayList<Person>();
+
+	for (int p=0; p<activePersons.size(); p++) 
 	{
-		Person person = activePersons.get(z);
-		if (x-range<person.location.x && x+range>person.location.x && y-range<person.location.y && y+range>person.location.y) 
-    	{
-			isNear=true;
-			person.update(x, y);
-			z=activePersons.size()-1;
+		Person person = activePersons.get(p);
+		float d = dist(x, y, person.location.x, person.location.y);
+		if (d <= trackDistance) 
+    {
+    	peopleInTrackDistance.add(person);
+			//person.update(x, y);
+			//p = activePersons.size()-1;
 		}
 	}
-  	if (!isNear) 
+	if(peopleInTrackDistance.size() == 1)
 	{
-		activePersons.add(new Person(x, y));
-	} 
+		Person person = peopleInTrackDistance.get(0);
+		person.update(x,y);
+	}
+	else if(peopleInTrackDistance.size() > 1){
+		Person person = peopleInTrackDistance.get(0);
+		person.update(x,y);
+		/*
+		for (int t = 0; t < peopleInTrackDistance.size(); ++t)
+		{
+			//Size comparison and pick best match if multiple people in peopleInTrackDistance
+		}*/
+	}
+	else {
+		activePersons.add(new Person(x, y, id));
+		id++;
+	}
+	peopleInTrackDistance.clear();
 }
 
 
@@ -430,17 +455,31 @@ public void checkPersonStatus()
 	for (int z=activePersons.size()-1;z>0; z--) 
 	{
 		Person person = activePersons.get(z);
-		if(person.isDead)
+
+		if(person.isDead || person.leftViewport)
 		{
 			oldPersons.add(person);
 			activePersons.remove(z);
-		} else if (!person.hasBeenUpdated)
-		{
-        	person.isDead=true;
 		}
-		person.hasBeenUpdated=false;
-	}
 
+		else if (!person.updated)
+		{
+			person.timer++;
+			if(person.location.x < viewportBorder || 
+				 person.location.x > width-viewportBorder || 
+				 person.location.y < viewportBorder || 
+				 person.location.y > height-viewportBorder)
+			{
+				person.leftViewport = true;
+				lwp++;
+			}
+			if(person.timer == timerLimit)
+			{
+				person.isDead=true;
+			}
+		}
+		person.updated = false;
+	}
 }
 
 
@@ -449,7 +488,6 @@ public void displayActivePersons()
 	for (int z=activePersons.size()-1;z>0; z--) 
 	{
 		Person person = activePersons.get(z);
-		//person.id = z;
 		person.drawID();
 		person.display();
 		person.drawWaypoints(255,0,255);
