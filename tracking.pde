@@ -1,6 +1,7 @@
 void createUpdate(float x, float y)
 {
 	ArrayList<Person> peopleInTrackDistance = new ArrayList<Person>();
+	PVector blob = new PVector(x,y);
 
 	for (int p=0; p<activePersons.size(); p++) 
 	{
@@ -19,13 +20,28 @@ void createUpdate(float x, float y)
 		person.update(x,y);
 	}
 	else if(peopleInTrackDistance.size() > 1){
-		Person person = peopleInTrackDistance.get(0);
-		person.update(x,y);
-		/*
+		//Person person = peopleInTrackDistance.get(0);
+		//person.update(x,y);
 		for (int t = 0; t < peopleInTrackDistance.size(); ++t)
 		{
-			//Size comparison and pick best match if multiple people in peopleInTrackDistance
-		}*/
+			Person person = peopleInTrackDistance.get(t);
+			if(person.age > 4)
+			{
+				PVector wp1 = person.waypoints.get(person.waypoints.size()-1);
+				PVector wp2 = person.waypoints.get(person.waypoints.size()-2);
+				PVector wpVector = PVector.sub(wp2,wp1); //wpVector.normalize();
+				PVector dirVector = PVector.sub(wp1,blob); //dirVector.normalize();
+				int maxDiff = int(degrees(wpVector.heading())+fieldOfVision);
+				int dirHeading = int(degrees(dirVector.heading()));
+				if(-maxDiff < dirHeading && dirHeading < maxDiff)
+				{
+					person.update(x,y);
+				}
+			}
+			else{
+				return;
+			}
+		}
 	}
 	else {
 		activePersons.add(new Person(x, y, id));
