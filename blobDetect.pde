@@ -1,16 +1,26 @@
 void blobDetect() 
 {
+<<<<<<< HEAD
   motionImg.pixels = pixels; //get processed image after motionDetect
   image(video, 0, 0, width, height);
   blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
   fastblur(blurImg, blobBlur); //blur image
   image(blurImg, 0, 0, width, height);
   theBlobDetection.computeBlobs(blurImg.pixels); //detect blobs in blurred image
+=======
+	motionImg.pixels = pixels; //get processed image after motionDetect
+	//image(video, 0, 0, width, height);
+	blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
+	fastblur(blurImg, blobBlur); //blur image
+	image(blurImg, 0, 0, width, height);
+	theBlobDetection.computeBlobs(blurImg.pixels); //detect blobs in blurred image
+>>>>>>> edc622d0478bbdce81bdef47ba326249aa6962d1
 }
 
 
 void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
 {
+<<<<<<< HEAD
   noFill();
   Blob b;
   EdgeVertex eA, eB;
@@ -53,6 +63,50 @@ void drawBlobsAndEdges(boolean drawBlobs, boolean drawEdges, boolean track)
       }
     }
   }
+=======
+	noFill();
+	Blob b;
+	EdgeVertex eA, eB;
+	for (int n=0; n<theBlobDetection.getBlobNb (); n++)
+	{
+		b=theBlobDetection.getBlob(n);
+		if (b!=null)
+		{
+			// draw Edges
+			if (drawEdges)
+			{
+				strokeWeight(3);
+				stroke(0, 255, 0);
+				for (int m=0; m<b.getEdgeNb (); m++)
+				{
+					eA = b.getEdgeVertexA(m);
+					eB = b.getEdgeVertexB(m);
+					if (eA !=null && eB !=null)
+					line(eA.x*width, eA.y*height, eB.x*width, eB.y*height);
+				}
+			}
+
+			// draw Blobs
+			if (drawBlobs)
+			{
+        		strokeWeight(1);
+        		noFill();
+        		stroke(255, 0, 0);
+        		rect(b.xMin*width,b.yMin*height,b.w*width,b.h*height);
+			}
+
+			// tracking + draw path
+			if (track)
+			{ 
+				if (b.w*width*b.h*height>minA) 
+				{
+					createUpdate(b.x*width,b.y*height,b.w*width,b.h*height);
+					blobNb++;
+				}
+			}
+		}
+	}
+>>>>>>> edc622d0478bbdce81bdef47ba326249aa6962d1
 }
 
 
