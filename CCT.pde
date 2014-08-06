@@ -16,14 +16,16 @@ int id = 1; //id starting number
 
 String PATH = "innenhof_komplett.mp4";
 
-float threshold = 50; //difference treshold in motionDetect.pde
-float blobTreshold = 0.5f; //treshold for blobDetection
+float threshold = 30; //difference threshold in motionDetect.pde
+float blobTreshold = 0.5f; //threshold for blobDetection
 
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
-int minA = 430; //min area in pixels for Blob to be treated as a person
-int trackDistance = 25; //trackDistance for person.update
-int viewportBorder = 15; //border thickness in which leftViewport will be detected
-int timerLimit = 30;
+int minA = 500; //min area in pixels for Blob to be treated as a person
+int trackDistance = 30; //trackDistance for person.update
+//int checkIfGhostDistance = trackDistance*3;
+int viewportBorder = 2; //border thickness in which leftViewport will be detected
+//int maxAge = 8;
+float fieldOfVision = 90; //search field (in Degrees) of lastWaypoint for blobs
 
 	int pCount0=0;
   int pCount1=0;
@@ -35,7 +37,8 @@ int timerLimit = 30;
 int W = 700; 
 int H = 394;
 
-ArrayList <Person> activePersons; //contains persons active in current frame
+ArrayList <Person> activePersons; //contains active persons in current frame
+//ArrayList <Person> inactivePersons; //contains inactive persons in current frame
 ArrayList <Person> oldPersons; //contains "dead" persons
 ArrayList <Integer> detectedPixels;
 
@@ -62,6 +65,7 @@ void setup()
 	theBlobDetection.setPosDiscrimination(true);
 	theBlobDetection.setThreshold(blobTreshold);
 	activePersons = new ArrayList <Person>();
+	//inactivePersons = new ArrayList <Person>();
 	oldPersons = new ArrayList <Person>();
 	detectedPixels = new ArrayList <Integer>();
 	f = createFont("Arial",16,true);
@@ -70,22 +74,23 @@ void setup()
 
 void draw()
 {
-	prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
-	prevFrame.updatePixels();
-	video.read();
-	newFrame = true;
+	if (video.available())
+  {
+		prevFrame.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
+		prevFrame.updatePixels();
+		video.read();
+		newFrame = true;
+	}
 	
 	if (newFrame)
 	{
 		newFrame=false;
 		motionDetect();
-			//rauschCheck();
+		//rauschCheck();
 		blobDetect(); //detect blobs in frame and create/update person instances
-		drawBlobsAndEdges(false, false, false); //visualize (drawBoxes, drawContours, drawPath)
+		drawBlobsAndEdges(true, true, true); //visualize (drawBoxes, drawContours, drawPath)
 		checkPersonStatus();
-		displayActivePersons();
-		displayOldWaypoints();
-		
+
     	textFont(f,10);
     	fill(255,0,0);
     	text("Blobs im Frame (>= minA ("+minA+")): " + blobNb, 10, height-10);
@@ -95,17 +100,21 @@ void draw()
     	text("leftViewport: " + lwp, 10, 10);
     	blobNb=0;
     	draw++;
-  	}
-}
-
-void displayOldWaypoints()
-{
-  if (keyPressed == true)
-  {
-    for (int z=oldPersons.size()-1; z>0; z--)
-    {
-      Person p = oldPersons.get(z);
-      p.drawWaypoints(0,255,0); //inactiveWaypoints color
-    }  
   }
+
+  //Save Frames for debugging
+ 	if (keyPressed) {
+	  if (key == 's') {
+	    saveFrame("Frame-##.png");
+	  }
+	  else
+	  {
+	  	for (int z=oldPersons.size()-1; z>0; z--)
+	    {
+	      Person p = oldPersons.get(z);
+	      p.drawWaypoints(0,255,0); //inactiveWaypoints color
+	    }  
+	  }
+	}
+
 }
