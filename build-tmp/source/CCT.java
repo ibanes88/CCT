@@ -66,6 +66,7 @@ ArrayList <Integer> detectedPixels;
 PFont f;
 
 PrintWriter output;
+PrintWriter finalFrameCount;
 
 
 public void setup()
@@ -75,8 +76,8 @@ public void setup()
   video.loop();
   prevFrame = createImage(W, H, RGB);
   bgImage = createImage(W, H, RGB);
-  //lTest = rauschCheckX*rauschCheckY; //for rauschCheck
-  //schwelle = int(lTest*0.6);         //for rauschCheck
+  lTest = rauschCheckX*rauschCheckY; //for rauschCheck
+  schwelle = PApplet.parseInt(lTest*0.6f);         //for rauschCheck
 
   video.speed(1);
   frameRate(15);
@@ -93,6 +94,7 @@ public void setup()
   detectedPixels = new ArrayList <Integer>();
   f = createFont("Arial", 16, true);
   output = createWriter("positions.txt");
+  finalFrameCount = createWriter("framecount.txt");
 }
 
 
@@ -146,6 +148,9 @@ public void draw()
 //save
 public void mouseReleased()
 {
+  finalFrameCount.println(frameCount);
+  finalFrameCount.flush();
+  finalFrameCount.close();
   for (int z=0; z<oldPersons.size (); z++)
   {
     Person p = oldPersons.get(z);
@@ -154,7 +159,7 @@ public void mouseReleased()
       if (y%1 == 0) {
         PVector w = p.waypoints.get(y);
 
-        output.println(p.pID+","+(int) w.x +","+ (int) w.y); // Write the coordinate to the file
+        output.println(p.pID+","+(int) w.x +","+ (int) w.y +","+ (int) w.z); // Write the coordinate to the file
       }
     }
   }  
@@ -171,7 +176,7 @@ public void blobDetect()
   //image(video, 0, 0, width, height);
   blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
   fastblur(blurImg, blobBlur); //blur image
-  image(blurImg, 0, 0, width, height);
+  //image(blurImg, 0, 0, width, height);
   theBlobDetection.computeBlobs(blurImg.pixels); //detect blobs in blurred image
 }
 
@@ -430,11 +435,11 @@ Person(float x, float y, float w, float h, int id)
 }
 
 
-public void update(float x, float y, float w, float h)
+public void update(float x, float y, float w, float h, int fc)
 {
 	if(frameCount%4 == 0)
 	{
-		waypoints.add(new PVector(location.x,location.y));
+		waypoints.add(new PVector(location.x,location.y,fc));
 
 		if(this.waypoints.size() == 2)
 		{
@@ -653,14 +658,14 @@ public void createUpdate(float x, float y, float w, float h)
 			Person person = peopleInTrackDistance.get(0);
 			if((viewportBorder>(x-w/2))||((x+w/2)>width-viewportBorder)||(viewportBorder>(y-h/2))||((y+h/2)>height-viewportBorder))
 			{
-				person.update(x,y,w,h);
+				person.update(x,y,w,h,frameCount);
 				personFound = true;
 			}
 			else
 			{
 				if((person.averageWidth-person.averageWidth/dn)<w&&w<(person.averageWidth+person.averageWidth/dn)||(person.averageHeight-person.averageHeight/dn)<h&&h<(person.averageHeight+person.averageHeight/dn))
 				{
-					person.update(x,y,w,h);
+					person.update(x,y,w,h,frameCount);
 					personFound = true;
 				}
 			}
@@ -687,7 +692,7 @@ public void createUpdate(float x, float y, float w, float h)
 							int dirHeading = PApplet.parseInt(degrees(dirVector.heading()));
 							if(minDiff < dirHeading && dirHeading < maxDiff)
 							{
-								person.update(x,y,w,h);
+								person.update(x,y,w,h,frameCount);
 								t = peopleInTrackDistance.size();
 								personFound = true;
 							}
@@ -708,7 +713,7 @@ public void createUpdate(float x, float y, float w, float h)
 						int dirHeading = PApplet.parseInt(degrees(dirVector.heading()));
 						if(minDiff < dirHeading && dirHeading < maxDiff)
 						{
-							person.update(x,y,w,h);
+							person.update(x,y,w,h,frameCount);
 							t = peopleInTrackDistance.size();
 							personFound = true;
 						}

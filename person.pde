@@ -42,11 +42,11 @@ Person(float x, float y, float w, float h, int id)
 }
 
 
-void update(float x, float y, float w, float h)
+void update(float x, float y, float w, float h, int fc)
 {
 	if(frameCount%4 == 0)
 	{
-		waypoints.add(new PVector(location.x,location.y));
+		waypoints.add(new PVector(location.x,location.y,fc));
 
 		if(this.waypoints.size() == 2)
 		{

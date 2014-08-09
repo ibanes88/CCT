@@ -4,7 +4,7 @@ void blobDetect()
   //image(video, 0, 0, width, height);
   blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
   fastblur(blurImg, blobBlur); //blur image
-  image(blurImg, 0, 0, width, height);
+  //image(blurImg, 0, 0, width, height);
   theBlobDetection.computeBlobs(blurImg.pixels); //detect blobs in blurred image
 }
 

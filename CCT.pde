@@ -47,6 +47,7 @@ ArrayList <Integer> detectedPixels;
 PFont f;
 
 PrintWriter output;
+PrintWriter finalFrameCount;
 
 
 void setup()
@@ -56,8 +57,8 @@ void setup()
   video.loop();
   prevFrame = createImage(W, H, RGB);
   bgImage = createImage(W, H, RGB);
-  //lTest = rauschCheckX*rauschCheckY; //for rauschCheck
-  //schwelle = int(lTest*0.6);         //for rauschCheck
+  lTest = rauschCheckX*rauschCheckY; //for rauschCheck
+  schwelle = int(lTest*0.6);         //for rauschCheck
 
   video.speed(1);
   frameRate(15);
@@ -74,6 +75,7 @@ void setup()
   detectedPixels = new ArrayList <Integer>();
   f = createFont("Arial", 16, true);
   output = createWriter("positions.txt");
+  finalFrameCount = createWriter("framecount.txt");
 }
 
 
@@ -127,6 +129,9 @@ void draw()
 //save
 void mouseReleased()
 {
+  finalFrameCount.println(frameCount);
+  finalFrameCount.flush();
+  finalFrameCount.close();
   for (int z=0; z<oldPersons.size (); z++)
   {
     Person p = oldPersons.get(z);
@@ -135,7 +140,7 @@ void mouseReleased()
       if (y%1 == 0) {
         PVector w = p.waypoints.get(y);
 
-        output.println(p.pID+","+(int) w.x +","+ (int) w.y); // Write the coordinate to the file
+        output.println(p.pID+","+(int) w.x +","+ (int) w.y +","+ (int) w.z); // Write the coordinate to the file
       }
     }
   }  

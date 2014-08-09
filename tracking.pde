@@ -50,14 +50,14 @@ void createUpdate(float x, float y, float w, float h)
 			Person person = peopleInTrackDistance.get(0);
 			if((viewportBorder>(x-w/2))||((x+w/2)>width-viewportBorder)||(viewportBorder>(y-h/2))||((y+h/2)>height-viewportBorder))
 			{
-				person.update(x,y,w,h);
+				person.update(x,y,w,h,frameCount);
 				personFound = true;
 			}
 			else
 			{
 				if((person.averageWidth-person.averageWidth/dn)<w&&w<(person.averageWidth+person.averageWidth/dn)||(person.averageHeight-person.averageHeight/dn)<h&&h<(person.averageHeight+person.averageHeight/dn))
 				{
-					person.update(x,y,w,h);
+					person.update(x,y,w,h,frameCount);
 					personFound = true;
 				}
 			}
@@ -84,7 +84,7 @@ void createUpdate(float x, float y, float w, float h)
 							int dirHeading = int(degrees(dirVector.heading()));
 							if(minDiff < dirHeading && dirHeading < maxDiff)
 							{
-								person.update(x,y,w,h);
+								person.update(x,y,w,h,frameCount);
 								t = peopleInTrackDistance.size();
 								personFound = true;
 							}
@@ -105,7 +105,7 @@ void createUpdate(float x, float y, float w, float h)
 						int dirHeading = int(degrees(dirVector.heading()));
 						if(minDiff < dirHeading && dirHeading < maxDiff)
 						{
-							person.update(x,y,w,h);
+							person.update(x,y,w,h,frameCount);
 							t = peopleInTrackDistance.size();
 							personFound = true;
 						}
