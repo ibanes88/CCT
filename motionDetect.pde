@@ -5,7 +5,7 @@ void motionDetect()
   video.loadPixels(); //current pixels
   prevFrame.loadPixels(); //last frame pixels 
 
-    // loop throuh pixelArray
+  // loop throuh pixelArray
   for (int x = 0; x < video.width; x ++ ) 
   {
     for (int y = 0; y < video.height; y ++ ) 
@@ -43,7 +43,7 @@ void motionDetect()
       }
     }
   }
-
+/*
   if (draw > 4)
   {
     for (int z=0; z<detectedPixels.size (); z++) //recolor black pixels from detectedPixels[]
@@ -60,6 +60,7 @@ void motionDetect()
   pCount0=pCount1;
   pCount1=pCount2;
   pCount2=pCount3;
-  pCount3=0;
+  pCount3=0;*/
+  updatePixels();
 }
 

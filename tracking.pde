@@ -73,6 +73,7 @@ void createUpdate(float x, float y, float w, float h)
 				{
 					if((person.averageWidth-person.averageWidth/dn)< w&&w<(person.averageWidth+person.averageWidth/dn)||(person.averageHeight-person.averageHeight/dn)<h&&h<(person.averageHeight+person.averageHeight/dn))
 					{
+						/*
 						if(person.waypoints.size() > 2)
 						{
 							PVector wp1 = person.waypoints.get(person.waypoints.size()-1);
@@ -85,10 +86,13 @@ void createUpdate(float x, float y, float w, float h)
 							if(minDiff < dirHeading && dirHeading < maxDiff)
 							{
 								person.update(x,y,w,h,frameCount);
+								*/
 								t = peopleInTrackDistance.size();
 								personFound = true;
+								/*
 							}
 						}
+						*/
 					}
 				}
 				//If person is at viewportBorder: Check heading and update
@@ -150,16 +154,14 @@ void checkPersonStatus()
 
 		else if (!person.updated)
 		{
-			/*
 			if(person.atViewportBorder)
 			{
-				*/
 				person.isDead=true;
-				/*
 				++lwp;
 			}
 			else
 			{
+				/*
 				boolean isGhost = false;
 				for (int ap = activePersons.size()-1; ap > 0; ap--)
 				{
@@ -182,10 +184,12 @@ void checkPersonStatus()
 				}
 				if(!isGhost)
 				{
+					*/
 					person.isDead=true;
+					/*
 				}
-			}
 			*/
+			}
 		}
 
 		else if (person.updated) {

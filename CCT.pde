@@ -15,17 +15,17 @@ int draw=0; // current draw
 int lwp = 0;
 int id = 1; //id starting number
 
-String PATH = "innenhof_komplett.mp4";
+String PATH = "StPeter_2.mp4";
 
-float threshold = 30; //difference treshold in motionDetect.pde
-float blobTreshold = 0.5f; //treshold for blobDetection
+float threshold = 50; //difference treshold in motionDetect.pde
+float blobTreshold = 0.9f; //treshold for blobDetection
 
 int blobBlur = 1; //blur ratio used on blurImg for computeBlobs
-int minA = 500; //min area in pixels for Blob to be treated as a person
+int minA = 250; //min area in pixels for Blob to be treated as a person
 int trackDistance = 30; //trackDistance for person.update
 //int checkIfGhostDistance = trackDistance*3;
 //int maxAge = 8;
-int viewportBorder = 5; //border thickness in which leftViewport will be detected
+int viewportBorder = 15; //border thickness in which leftViewport will be detected
 float fieldOfVision = 90; //search field (in Degrees) of lastWaypoint for blobs
 int timerLimit = 30;
 
@@ -36,8 +36,8 @@ int pCount3=0;
 int pCount4=0;
 int pCount5=0;
 
-int W = 700; 
-int H = 394;
+int W = 1200; 
+int H = 674;
 
 ArrayList <Person> activePersons; //contains persons active in current frame
 //ArrayList <Person> inactivePersons; //contains inactive persons in current frame
@@ -61,9 +61,9 @@ void setup()
   schwelle = int(lTest*0.6);         //for rauschCheck
 
   video.speed(1);
-  frameRate(15);
+  frameRate(24);
 
-  blurImg = new PImage(120, 68); //small copy of camera frame for blobDetection
+  blurImg = new PImage(600, 337); //small copy of camera frame for blobDetection
   motionImg = new PImage(W, H);
 
   theBlobDetection = new BlobDetection(blurImg.width, blurImg.height);	

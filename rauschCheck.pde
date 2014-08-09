@@ -6,7 +6,7 @@ int pCount=0;
 
 void rauschCheck() {
   loadPixels();
-  //prevFrame.loadPixels();
+  //prevFrame.loadPixels(); 
   for (int x = 0; x < video.width; x ++ ) {
     for (int y = 0; y < video.height; y ++ ) {
       int loc = x + y*video.width;
