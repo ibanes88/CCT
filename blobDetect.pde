@@ -1,7 +1,7 @@
 void blobDetect() 
 {
   motionImg.pixels = pixels; //get processed image after motionDetect
-  //image(video, 0, 0, width, height);
+  image(video, 0, 0, width, height);
   blurImg.copy(motionImg, 0, 0, video.width, video.height, 0, 0, blurImg.width, blurImg.height);
   fastblur(blurImg, blobBlur); //blur image
   image(blurImg, 0, 0, width, height);
