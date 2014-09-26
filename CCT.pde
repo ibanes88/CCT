@@ -47,6 +47,7 @@ ArrayList <Integer> detectedPixels;
 PFont f;
 
 PrintWriter output;
+PrintWriter speedData;
 PrintWriter finalFrameCount;
 
 
@@ -75,6 +76,7 @@ void setup()
   detectedPixels = new ArrayList <Integer>();
   f = createFont("Arial", 16, true);
   output = createWriter("positions.txt");
+  speedData = createWriter("speed.txt");
   finalFrameCount = createWriter("framecount.txt");
 }
 
@@ -95,7 +97,7 @@ void draw()
     motionDetect();
     //rauschCheck();
     blobDetect(); //detect blobs in frame and create/update person instances
-    drawBlobsAndEdges(true, true, true); //visualize (drawBoxes, drawContours, drawPath)
+    drawBlobsAndEdges(false, false, true); //visualize (drawBoxes, drawContours, drawPath)
     checkPersonStatus();
 
     textFont(f, 10);
@@ -146,6 +148,20 @@ void mouseReleased()
   }  
   output.flush(); // Writes the remaining data to the file
   output.close(); // Finishes the file
+  for (int z=0; z<oldPersons.size (); z++)
+  {
+    Person p = oldPersons.get(z);
+    for (int y=0; y<p.speedpoints.size (); y++)
+    {
+      if (y%1 == 0) {
+        PVector w = p.speedpoints.get(y);
+
+        speedData.println(p.pID+","+(int) w.x +","+ (int) w.y +","+ (int) w.z); // Write the coordinate to the file
+      }
+    }
+  }
+  speedData.flush(); // Writes the remaining data to the file
+  speedData.close(); // Finishes the file
   bgImage.copy(video, 0, 0, video.width, video.height, 0, 0, video.width, video.height);
   bgImage.save("bgImage.jpg");
   exit();

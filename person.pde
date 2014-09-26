@@ -24,6 +24,7 @@ class Person
 
 	ArrayList <PVector> waypoints = new ArrayList <PVector>();
 	ArrayList <PVector> assumedWaypoints = new ArrayList <PVector>();
+	ArrayList <PVector> speedpoints = new ArrayList <PVector>();
 
 
 Person(float x, float y, float w, float h, int id)
@@ -46,6 +47,7 @@ void update(float x, float y, float w, float h, int fc)
 {
 	if(frameCount%4 == 0)
 	{
+		float momSpeed = 0;
 		waypoints.add(new PVector(location.x,location.y,fc));
 
 		if(this.waypoints.size() == 2)
@@ -70,13 +72,17 @@ void update(float x, float y, float w, float h, int fc)
 			for (int i = 1; i < waypoints.size(); ++i) {
 				PVector wpThis = waypoints.get(i);
 				PVector wpLast = waypoints.get(i-1);
-				PVector thisWpVector = PVector.sub(wpThis,wpLast );
+				PVector thisWpVector = PVector.sub(wpThis,wpLast);
 				float wpVelocity = thisWpVector.mag();
 				magnitudes += wpVelocity;
+				if(i == waypoints.size() -1){
+					momSpeed = wpVelocity;
+				}
 			}
 			magnitudes /= (waypoints.size()-1);
 			velocity = magnitudes;
 		}
+		speedpoints.add(new PVector(location.x,location.y,momSpeed));
 	}
 
 	++age;
